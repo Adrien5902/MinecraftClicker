@@ -1,0 +1,11 @@
+#inventory{
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
+    background: var(--primary);
+    height: calc(100vh - 0.5em*2);
+    border-top-left-radius: 1em;
+    border-bottom-left-radius: 1em;
+    padding: 0.5em;
+}
