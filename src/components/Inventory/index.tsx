@@ -12,7 +12,7 @@ export default function InventoryElement({inventory}: Props) {
     <div id="inventory">
         <div id="inventory-blocks">
             {Object.keys(inventory.blocks).map(
-                (name) => <InventoryBloc count={inventory.blocks[name as BlockName] ?? 0} bloc={Blocs.find(b => b.name == name) as Block}/>
+                (name, i) => <InventoryBloc key={i} count={inventory.blocks[name as BlockName] ?? 0} bloc={Blocs.find(b => b.name == name) as Block}/>
             )}
         </div>
 

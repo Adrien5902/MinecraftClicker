@@ -20,7 +20,7 @@ function App() {
 
     return (
         <>
-            <BlockElement currentBlock={currentBlock} setInventory={setInventory}></BlockElement>
+            <BlockElement setCurrentBlock={setCurrentBlock} currentBlock={currentBlock} inventory={inventory} setInventory={setInventory}></BlockElement>
             <InventoryElement inventory={inventory}/>
         </>
     )

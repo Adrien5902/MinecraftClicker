@@ -1,5 +1,5 @@
 import { BlockName } from "./Block"
-import { Tool, toolList } from "./Tool"
+import { Tool, Tools } from "./Tool"
 
 export interface Inventory{
     tools: Tool[]
@@ -7,10 +7,10 @@ export interface Inventory{
 }
 
 export const InventoryController = {
-    getEquippedTool: (inventory: Inventory) => inventory.tools.find(t => t.equipped)
+    getEquippedTool: (inventory: Inventory) => inventory.tools.find(t => t.equipped) as Tool
 }
 
 export const startingInventory :Inventory = {
-    tools: [toolList[0].equip()],
+    tools: [Tools[13].equip()],
     blocks: {dirt: 0}
 }

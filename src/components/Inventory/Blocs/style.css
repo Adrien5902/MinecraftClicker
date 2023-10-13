@@ -17,15 +17,18 @@
     font-size: 1.5em;
     position: relative;
     margin: .2em 0;
+    user-select: none;
 
     & span{
         position: absolute;
         text-shadow: 0 0 5px black;
+        pointer-events: none;
     }
 
     & img{
         width: 100%;
         user-select: none;
+        cursor: pointer;
     }
 
     & .inventory-block-count{
