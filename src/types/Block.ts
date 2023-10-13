@@ -22,18 +22,26 @@ export class Block{
     getTexture = () => "/blocks/" + this.name + ".png"
 }
 
-//@ts-ignore
-export const Blocs = (Object.keys(BlockList) as BlockName[]).map(name => new Block(name, ...BlockList[name]))
+export const Blocs = (Object.keys(BlockList) as BlockName[]).map(name => new Block(name, BlockList[name][0]))
 
-export class BlockTag{
-    name: string
-    values : (BlockTag | BlockName)[]
-    data: Block[]
+export class BlockTag {
+    name: string;
+    values: (BlockTag | BlockName)[];
+    data: Block[];
 
-    constructor(name: string, ...values: (BlockTag | BlockName)[]){
-        this.name = name
-        this.values = values
-        this.data = values.map(v => v instanceof BlockTag ? v.data : [Blocs.find(b => b.name == v) as Block]).flat(1)
+    constructor(name: string, ...values: (BlockTag | BlockName)[]) {
+        this.name = name;
+        this.values = values;
+        this.data = values
+            .map((v) => {
+                if (v instanceof BlockTag) {
+                    return v.data;
+                } else {
+                    const block = Blocs.find((b) => b.name === v) as Block;
+                    return [block];
+                }
+            })
+            .flat(1);
     }
 }
 

@@ -87,7 +87,7 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
         const tool = InventoryController.getEquippedTool(inventory)
         const animation = tool.types[0].animation
         toolRef.current?.animate(animation[1], {duration:0, fill: "forwards"})
-    }, [inventory.tools])
+    }, [inventory, inventory.tools])
 
     function handleDrop(e: React.DragEvent){
         const blockName = e.dataTransfer.getData("text")
