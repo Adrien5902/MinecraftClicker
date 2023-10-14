@@ -4,6 +4,7 @@ import { Block, Blocs } from '../../types/Block'
 import { Inventory, startingInventory } from '../../types/Inventory'
 import BlockElement from '../Block'
 import InventoryElement from '../Inventory'
+import Header from '../Header'
 
 function App() {
     const [inventory, setInventory] = useState<Inventory>(startingInventory)
@@ -20,6 +21,7 @@ function App() {
 
     return (
         <>
+            <Header></Header>
             <BlockElement setCurrentBlock={setCurrentBlock} currentBlock={currentBlock} inventory={inventory} setInventory={setInventory}></BlockElement>
             <InventoryElement inventory={inventory}/>
         </>

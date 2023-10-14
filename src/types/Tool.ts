@@ -1,11 +1,14 @@
 import { Block, BlockTag, BlockTags } from "./Block"
+import { Item } from "./Item"
+import { ObjectClassMap } from "./MapObjectClass"
 
 export class ToolType{
     name: string
     quickerMineBlocks: Block[]
     animation: [Keyframe[], Keyframe[], KeyframeAnimationOptions]
+    speedMultiplier: number
 
-    constructor(name: string, quickerMineBlocks: (BlockTag | Block)[], anim: [Keyframe[] | Keyframe, Keyframe[] | Keyframe, number?, number?]){
+    constructor(name: string, quickerMineBlocks: (BlockTag | Block)[], anim: [Keyframe[] | Keyframe, Keyframe[] | Keyframe, number?], speedMultiplier? : number){
         this.name = name
         this.quickerMineBlocks = quickerMineBlocks.map(v => v instanceof BlockTag ? v.data : [v]).flat(1)
         this.animation = [
@@ -13,12 +16,20 @@ export class ToolType{
             Array.isArray(anim[1]) ? anim[1] : [anim[1], anim[0]] as Keyframe[], 
             {duration: anim[2] ?? 100, fill: "forwards"}
         ]
+        this.speedMultiplier = speedMultiplier ?? 2
     }
 }
 
-export const ToolTypes: Record<string, ToolType> = [
-    new ToolType(
-        "shovel", 
+const ToolTypesList = {
+    "hand": [
+        [],
+        [
+            {transform: "rotateZ(-45deg) scale(0.4) translateX(30em) translateY(2em)", "transformOrigin": "center"}, 
+            {transform: "rotateZ(-105deg) scale(0.4) translateX(10em) translateY(12em)", "transformOrigin": "center"}, 
+        ]
+    ],
+
+    "shovel": [  
         [BlockTags.soil], 
         [
             [
@@ -33,26 +44,27 @@ export const ToolTypes: Record<string, ToolType> = [
             ],
             250
         ]
-    ),
+    ],
 
-    new ToolType(
-        "axe", 
+    "axe": [  
         [BlockTags.wood], 
         [
             {transform: "rotateZ(-90deg)"}, 
             {transform: "rotateZ(-180deg)"}, 
         ]
-    ),
+    ],
 
-    new ToolType(
-        "pickaxe", 
-        [BlockTags.stone], 
+    "pickaxe": [  
+        [BlockTags.stones], 
         [
             {transform: "rotateZ(0deg) rotateY(180deg)"}, 
             {transform: "rotateZ(-90deg) rotateY(180deg)"}, 
         ]
-    ),
-].reduce((prev, curr) => ({...prev, [curr.name]: curr}), {})
+    ],
+}
+
+export const ToolTypes = ObjectClassMap<ToolType, typeof ToolTypesList>(ToolTypesList, ToolType) 
+type ToolTypeNames = keyof typeof ToolTypes
 
 export class ToolLevel{
     name: string
@@ -66,33 +78,33 @@ export class ToolLevel{
     }
 }
 
-export const ToolLevels : Record<string, ToolLevel> = ([
-    new ToolLevel("hand", 1, 1),
-    new ToolLevel("wood", 2, 1),
-    new ToolLevel("stone", 4, 2),
-    new ToolLevel("iron", 8, 3),
-    new ToolLevel("gold", 16, 2),
-    new ToolLevel("diamond", 32, 4),
-    new ToolLevel("netherite", 64, 5),
-]).reduce((prev, curr) => ({...prev, [curr.name]: curr}), {})
+const ToolLevelsList = {
+    "hand": [1, 1],
+    "wood": [2, 1],
+    "stone": [4, 2],
+    "iron": [8, 3],
+    "gold": [16, 2],
+    "diamond": [32, 4],
+    "netherite": [64, 5],
+}
+export const ToolLevels = ObjectClassMap<ToolLevel, typeof ToolLevelsList>(ToolLevelsList, ToolLevel)
+type ToolLevelNames = keyof typeof ToolLevels
 
-export class Tool{
+export class Tool implements Item{
     name: string
     multiplier: number
     speed: number
     equipped: boolean
-    quickerMineBlocks: Block[]
     types: ToolType[]
     level: ToolLevel
-    
-    constructor(name: string, level: string, types?: string[] | string, speed?: number, multiplier?: number){
+
+    constructor(name: string, level: ToolLevelNames, types?: ToolTypeNames[] | ToolTypeNames, speed?: number, multiplier?: number){
         this.name = name
         this.level = ToolLevels[level]
         this.speed = speed ?? this.level.speed
         this.multiplier = multiplier ?? 1
         this.equipped = false
         this.types = (Array.isArray(types) ? types : (types ? [types] : [])).map(n => ToolTypes[n])
-        this.quickerMineBlocks = this.types?.map(t => t.quickerMineBlocks).flat(1) ?? []
     }
 
     equip(tools?: Tool[]){
@@ -102,8 +114,9 @@ export class Tool{
     }
 
     getSpeedOn(block: Block): number{
-        if(this.quickerMineBlocks.find(b => b.name == block.name)){
-            return this.speed * 2
+        const bestType = this.types.filter(t => t.quickerMineBlocks.find(b => b == block)).sort((a, b) => b.speedMultiplier - a.speedMultiplier)[0]
+        if(bestType){
+            return this.speed * bestType.speedMultiplier
         }else{
             return this.speed
         }
@@ -112,30 +125,32 @@ export class Tool{
     getTexture = () => "/tools/" + this.name + ".webp" 
 }
 
-export const Tools = [
-    new Tool("hand", "hand"),
+export const ToolsList = {
+    "hand": ["hand", "hand"],
 
-    new Tool("wooden-pickaxe", "wood", "pickaxe"),
-    new Tool("wooden-axe", "wood", "axe"),
-    new Tool("wooden-shovel", "wood", "shovel"),
+    "wooden-pickaxe": ["wood", "pickaxe"],
+    "wooden-axe": ["wood", "axe"],
+    "wooden-shovel": ["wood", "shovel"],
     
-    new Tool("stone-pickaxe", "stone", "pickaxe"),
-    new Tool("stone-axe", "stone", "axe"),
-    new Tool("stone-shovel", "stone", "shovel"),
+    "stone-pickaxe": ["stone", "pickaxe"],
+    "stone-axe": ["stone", "axe"],
+    "stone-shovel": ["stone", "shovel"],
     
-    new Tool("iron-pickaxe", "iron", "pickaxe"),
-    new Tool("iron-axe", "iron", "axe"),
-    new Tool("iron-shovel", "iron", "shovel"),
+    "iron-pickaxe": ["iron", "pickaxe"],
+    "iron-axe": ["iron", "axe"],
+    "iron-shovel": ["iron", "shovel"],
     
-    new Tool("golden-pickaxe", "gold", "pickaxe"),
-    new Tool("golden-axe", "gold", "axe"),
-    new Tool("golden-shovel", "gold", "shovel"),
+    "golden-pickaxe": ["gold", "pickaxe"],
+    "golden-axe": ["gold", "axe"],
+    "golden-shovel": ["gold", "shovel"],
     
-    new Tool("diamond-pickaxe", "diamond", "pickaxe"),
-    new Tool("diamond-axe", "diamond", "axe"),
-    new Tool("diamond-shovel", "diamond", "shovel"),
+    "diamond-pickaxe": ["diamond", "pickaxe"],
+    "diamond-axe": ["diamond", "axe"],
+    "diamond-shovel": ["diamond", "shovel"],
     
-    new Tool("netherite-pickaxe", "netherite", "pickaxe"),
-    new Tool("netherite-axe", "netherite", "axe"),
-    new Tool("netherite-shovel", "netherite", "shovel"),
-]
+    "netherite-pickaxe": ["netherite", "pickaxe"],
+    "netherite-axe": ["netherite", "axe"],
+    "netherite-shovel": ["netherite", "shovel"],
+}
+
+export const Tools = ObjectClassMap<Tool, typeof ToolsList>(ToolsList, Tool)

@@ -1,0 +1,26 @@
+#header{
+    display: flex;
+    background: var(--primary);
+    height: clamp(5em, 10vh, 10em);
+    padding: .5em;
+    border-bottom-right-radius: .5em;
+
+    > * {
+        margin: .5em;
+        background: var(--secondary);
+        padding: .5em;
+        border-radius: .5em;
+        cursor: pointer;
+    }
+}
+
+dialog{
+    margin: auto !important;
+    border: 0;
+    border-radius: .5em;
+    outline: 0;
+
+    &::backdrop{
+        background: rgba(0, 0, 0, 0.5);
+    }
+}

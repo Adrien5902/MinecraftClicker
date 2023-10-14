@@ -1,0 +1,17 @@
+.close-btn{
+    color: red;
+    font-size: 1.5rem;
+    position: absolute;
+    top: 0;
+    right: 0.3em;
+
+    > svg{
+        background: #fff;
+        border-radius: 100%;
+        padding: 0;
+    }
+}
+
+:has(.close-btn){
+    position: relative;
+}

@@ -1,9 +1,11 @@
 import { BlockName } from "./Block"
 import { Tool, Tools } from "./Tool"
+import { Upgrade } from "./upgrade"
 
 export interface Inventory{
     tools: Tool[]
     blocks: Partial<{[key in BlockName]: number}>
+    upgrades: Upgrade[]
 }
 
 export const InventoryController = {
@@ -11,6 +13,7 @@ export const InventoryController = {
 }
 
 export const startingInventory :Inventory = {
-    tools: [Tools[13].equip()],
-    blocks: {dirt: 0}
+    tools: [Tools.hand.equip()],
+    blocks: {dirt: 0},
+    upgrades: [],
 }

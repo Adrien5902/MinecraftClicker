@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './style.css'
 import { Block, Blocs } from '../../types/Block'
 import { Inventory, InventoryController } from '../../types/Inventory'
+import { Tool, Tools } from '../../types/Tool'
 
 interface Props{
     setInventory: React.Dispatch<React.SetStateAction<Inventory>>
@@ -23,7 +24,8 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
         const minedAmount = Math.floor(d/currentBlock.hardness)
         const dLeft = d % currentBlock.hardness
 
-        destroyStageImage.current = "/destroy/"+(Math.floor(dLeft/currentBlock.hardness*10-1))+".png"
+        const hardnessOutOfTen = Math.floor(dLeft/currentBlock.hardness*10)
+        destroyStageImage.current = "/destroy/"+(hardnessOutOfTen-1 >= 0 ? hardnessOutOfTen-1 : 0)+".png"
 
         if(minedAmount > 0){
             setInventory(i => ({...i, blocks: {...i.blocks, [currentBlock.name]: ((i.blocks[currentBlock.name] ?? 0) + minedAmount)}}))
@@ -55,7 +57,7 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
 
     function handleMouseDown(){
         const tool = InventoryController.getEquippedTool(inventory)
-        const animation = tool.types[0].animation
+        const animation = tool.types[0]?.animation
 
         blockRef.current?.animate([
             {
@@ -68,7 +70,7 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
 
     function handleMouseUp(){
         const tool = InventoryController.getEquippedTool(inventory)
-        const animation = tool.types[0].animation
+        const animation = tool.types[0]?.animation
 
         blockRef.current?.animate([
             {
@@ -79,19 +81,47 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
             }
         ], {duration: 100, fill: "forwards"})
 
-        toolRef.current?.animate(animation[1], animation[2])
+        if(animation) toolRef.current?.animate(animation[1], animation[2])
         destory(tool.getSpeedOn(currentBlock))
     }
 
+    function changeTool(tool?: Tool){
+        if(tool){
+            setInventory((i) => {
+                const tools = i.tools
+                tools.map(t => t == tool ? t.equip(tools) : t)
+                return {...i, tools}
+            })
+        }
+        
+        tool = tool ?? InventoryController.getEquippedTool(inventory)
+        const animation = tool.types[0]?.animation
+        if(animation) toolRef.current?.animate(animation[1], {duration:0, fill: "forwards"})
+    }
+
     useEffect(() => {
-        const tool = InventoryController.getEquippedTool(inventory)
-        const animation = tool.types[0].animation
-        toolRef.current?.animate(animation[1], {duration:0, fill: "forwards"})
+        changeTool()
     }, [inventory.tools])
 
     function handleDrop(e: React.DragEvent){
-        const blockName = e.dataTransfer.getData("text")
-        setCurrentBlock(curr => Blocs.find(b => b.name == blockName) ?? curr)
+        const data = e.dataTransfer.getData("text")
+        const [type, value] = data.split(':')
+
+        switch (type.toLowerCase()) {
+            case "block":
+                if(value != currentBlock.name){
+                    setDestroyStage(0)
+                    setCurrentBlock(curr => Blocs.find(b => b.name == value) ?? curr)
+                }
+                break;
+
+            case "tool":
+                changeTool(Tools[value as keyof typeof Tools])
+                break
+
+            default:
+                break;
+        }
     }
 
     return (
