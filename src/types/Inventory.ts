@@ -1,6 +1,6 @@
-import { BlockName } from "./Block"
-import { Tool, Tools } from "./Tool"
-import { Upgrade } from "./upgrade"
+import { BlockList, BlockName } from "./Block"
+import { Tool, ToolResolvable, Tools } from "./Tool"
+import { Upgrade } from "./Upgrade"
 
 export interface Inventory{
     tools: Tool[]
@@ -8,12 +8,27 @@ export interface Inventory{
     upgrades: Upgrade[]
 }
 
+export interface InventoryResolvable{
+    tools: ToolResolvable[]
+    blocks: Partial<{[key in BlockName]: number}>
+    upgrades: Upgrade[]
+}
+
 export const InventoryController = {
-    getEquippedTool: (inventory: Inventory) => inventory.tools.find(t => t.equipped) as Tool
+    getEquippedTool: (inventory: Inventory) => inventory.tools.find(t => t.equipped) as Tool,
+    resolve: (inventory: InventoryResolvable) => {
+        return {
+            ...inventory,
+            tools: inventory.tools.map(t => t.equipped ? Tools[t.name].equip() : Tools[t.name]),
+        } as Inventory
+    },
+    parse: (inventory: Inventory) => {
+        return {...inventory, tools: inventory.tools.map(t => ({name: t.name, equipped: t.equipped}))} as InventoryResolvable
+    }
 }
 
 export const startingInventory :Inventory = {
-    tools: [Tools.hand.equip()],
-    blocks: {dirt: 0},
+    tools: [...Object.values(Tools), Tools.hand.equip()],
+    blocks: Object.keys(BlockList).reduce((prev, curr) => ({...prev, [curr]: 0}), {}),
     upgrades: [],
 }

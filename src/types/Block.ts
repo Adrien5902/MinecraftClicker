@@ -8,14 +8,14 @@ export const BlockList = {
     planks: [40],
     log: [80],
     stone: [50],
-    coal_ore: [100],
-    iron_ore: [150],
-    copper_ore: [150],
-    gold_ore: [200],
-    lapis_ore: [200],
-    redstone_ore: [250],
-    diamond_ore: [500],
-    emerald_ore: [500],
+    "coal-ore": [100],
+    "iron-ore": [150],
+    "copper-ore": [150],
+    "gold-ore": [200],
+    "lapis-ore": [200],
+    "redstone-ore": [250],
+    "diamond-ore": [500],
+    "emerald-ore": [500],
     obsidian: [10000],
 }
 
@@ -31,6 +31,8 @@ export class Block implements Item{
     }
 
     getTexture = () => "/blocks/" + this.name + ".png"
+
+    static find = (name: BlockName) => Blocs.find(b => b.name == name) as Block
 }
 
 export const Blocs = (Object.keys(BlockList) as BlockName[]).map(name => new Block(name, BlockList[name][0]))
@@ -61,5 +63,7 @@ export const BlockTagsList = {
     stones: ["stone", OresTag, "obsidian"],
     wood: ["log", "planks"]
 }
+
+export type BlockTagsName = keyof typeof BlockTagsList
 
 export const BlockTags = ObjectClassMap<BlockTag, typeof BlockTagsList>(BlockTagsList, BlockTag)

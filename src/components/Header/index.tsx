@@ -2,12 +2,14 @@ import { useRef, useState } from 'react';
 import './style.css'
 import Achievements from '../Achievements';
 import Shop from '../Shop';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faRotate } from '@fortawesome/free-solid-svg-icons';
 
 interface Props{
-    
+    Save: () => Promise<void>
 }
 
-export default function Header({}: Props) {
+export default function Header({Save}: Props) {
     const Windows = {
         achievements: <Achievements close={close}/>,
         shop: <Shop close={close}/>
@@ -17,14 +19,11 @@ export default function Header({}: Props) {
 
     const [opened, setOpen] = useState<null | WindowNames>(null)
     const dialogRef = useRef<HTMLDialogElement>(null)
+    const [saving, setSaving] = useState<boolean | null>(null)
     
     function handleClick(name: WindowNames){
-        const dialog = dialogRef.current
-
-        if(dialog){
-            setOpen(name)
-            dialog?.showModal()
-        }
+        setOpen(name)
+        dialogRef.current?.showModal()
     }
 
     function close(){
@@ -48,11 +47,31 @@ export default function Header({}: Props) {
         }
     }
 
+    async function handleSave(){
+        setSaving(true)
+        await Save()
+        setSaving(false)
+        setTimeout(() => {
+            setSaving(null)
+        }, 1000)
+    }
+
     return (<div id='header'>
         {(Object.keys(Windows) as WindowNames[]).map((n, i) => [
             <img key={i} draggable={false} src={`/${n}.png`} alt={n} onClick={() => handleClick(n)}/>
         ])}
 
+        <span>
+            {saving == null ?
+            <img src="/save.png" alt="" onClick={handleSave} draggable={false}/>
+            : saving ? 
+            <FontAwesomeIcon icon={faRotate}/>
+            :
+            <FontAwesomeIcon icon={faCheck} style={{color: "lime"}}/>
+            }
+        </span>
+
+        
         <dialog ref={dialogRef} onClick={handleDialogClick}>
             {opened ? Windows[opened] : ""}
         </dialog>

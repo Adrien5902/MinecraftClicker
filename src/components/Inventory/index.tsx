@@ -1,5 +1,5 @@
 import { Inventory } from "../../types/Inventory";
-import { Block, BlockName, Blocs } from "../../types/Block";
+import { Block, BlockName } from "../../types/Block";
 import './style.css'
 import InventoryItem from "./item";
 
@@ -16,7 +16,7 @@ export default function InventoryElement({inventory}: Props) {
                 <span>Blocs :</span>
             </div>
             {Object.keys(inventory.blocks).map(
-                (name, i) => <InventoryItem key={i} count={inventory.blocks[name as BlockName] ?? 0} item={Blocs.find(b => b.name == name) as Block}/>
+                (name, i) => <InventoryItem key={i} count={inventory.blocks[name as BlockName] ?? 0} item={Block.find(name as BlockName)}/>
             )}
         </div>
 

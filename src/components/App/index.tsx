@@ -1,29 +1,49 @@
-import { useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import './style.css'
-import { Block, Blocs } from '../../types/Block'
-import { Inventory, startingInventory } from '../../types/Inventory'
+import { Block, BlockName } from '../../types/Block'
+import { Inventory, InventoryController } from '../../types/Inventory'
 import BlockElement from '../Block'
 import InventoryElement from '../Inventory'
 import Header from '../Header'
+import { Stats, startingStats } from '../../types/Stats'
+import { Biome, BiomeName, Biomes } from '../../types/Biome'
+import { Save, startingSave } from '../../types/Save'
+import { RightClickMenu } from '../RightClickMenu'
+
+const saveItem = window.localStorage.getItem("save")
+const save = saveItem ? JSON.parse(saveItem) as Save : startingSave
+
+export const StatsContext = createContext<Stats>(startingStats)
 
 function App() {
-    const [inventory, setInventory] = useState<Inventory>(startingInventory)
-    const [currentBlock, setCurrentBlock] = useState<Block>(Blocs[1])
+    const [inventory, setInventory] = useState<Inventory>(InventoryController.resolve(save.inventory))
+    const [currentBlock, setCurrentBlock] = useState<Block>(Block.find(save.currentBlock as BlockName))
+    const [stats, setStats] = useState<Stats>(save.stats)
+    const [biome, setBiome] = useState<Biome>(Biomes[save.currentBiome as BiomeName])
 
-    useEffect(() => {
-        const invstorage = window.localStorage.getItem("inventory")
-        const blockstorage = window.localStorage.getItem("current-block")
-        const foundBlockStorage = Blocs.findIndex(b => b.name == blockstorage)
-
-        setInventory(invstorage ? (JSON.parse(invstorage) as Inventory) : startingInventory)
-        setCurrentBlock(Blocs[foundBlockStorage > 0 ? foundBlockStorage : 0])
-    }, [])
+    async function Save(){
+        return window.localStorage.setItem("save", JSON.stringify({
+            currentBiome: biome.name,
+            currentBlock: currentBlock.name,
+            inventory: InventoryController.parse(inventory),
+            stats
+        } as Save))
+    }
 
     return (
         <>
-            <Header></Header>
-            <BlockElement setCurrentBlock={setCurrentBlock} currentBlock={currentBlock} inventory={inventory} setInventory={setInventory}></BlockElement>
-            <InventoryElement inventory={inventory}/>
+            <StatsContext.Provider value={stats}>
+                <Header Save={Save}></Header>
+                <BlockElement 
+                    setCurrentBlock={setCurrentBlock} 
+                    currentBlock={currentBlock} 
+                    inventory={inventory} 
+                    setInventory={setInventory}
+                    setStats={setStats}
+                ></BlockElement>
+                <InventoryElement inventory={inventory}/>
+            </StatsContext.Provider>
+            <RightClickMenu/>
         </>
     )
 }

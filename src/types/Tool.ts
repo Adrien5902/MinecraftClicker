@@ -108,8 +108,13 @@ export class Tool implements Item{
     }
 
     equip(tools?: Tool[]){
-        tools?.forEach(t => t.equipped = false)
+        tools?.forEach(t => t.unequip())
         this.equipped = true
+        return this
+    }
+
+    unequip(){
+        this.equipped = false
         return this
     }
 
@@ -153,4 +158,10 @@ export const ToolsList = {
     "netherite-shovel": ["netherite", "shovel"],
 }
 
+export type ToolNames = keyof typeof ToolsList
 export const Tools = ObjectClassMap<Tool, typeof ToolsList>(ToolsList, Tool)
+
+export interface ToolResolvable{
+    name: ToolNames
+    equipped: boolean
+}

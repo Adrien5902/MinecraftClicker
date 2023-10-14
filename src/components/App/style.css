@@ -14,4 +14,27 @@ body{
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+    font-family: 'Minecraft';
+}
+
+@font-face {
+    font-family: 'Minecraft';
+    src: url("/Minecraft.ttf");
+}
+
+dialog{
+    margin: auto !important;
+    border: 0;
+    outline: 0;
+    padding: 0 !important;
+
+    &[open]{
+        border-radius: .5em;
+        padding: .2em .8em !important;
+        overflow: hidden;
+    }
+
+    &::backdrop{
+        background: rgba(0, 0, 0, 0.5);
+    }
 }

@@ -1,5 +1,8 @@
+#stats > *{
+    text-align: left;
+}
+
 #stats > p{
     font-weight: bold;
     font-size: 1.5em;
-    text-align: left;
 }

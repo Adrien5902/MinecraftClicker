@@ -1,21 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import './style.css'
-import { Block, Blocs } from '../../types/Block'
+import { Block, BlockName } from '../../types/Block'
 import { Inventory, InventoryController } from '../../types/Inventory'
 import { Tool, Tools } from '../../types/Tool'
+import { Stats } from '../../types/Stats'
 
 interface Props{
     setInventory: React.Dispatch<React.SetStateAction<Inventory>>
     setCurrentBlock: React.Dispatch<React.SetStateAction<Block>>
     currentBlock: Block
     inventory: Inventory
+    setStats: React.Dispatch<React.SetStateAction<Stats>>
 }
 
-export default function BlockElement({currentBlock, setInventory, inventory, setCurrentBlock}: Props) {
+export default function BlockElement({currentBlock, setInventory, inventory, setCurrentBlock, setStats}: Props) {
     const blockRef = useRef<HTMLImageElement>(null)
     const blockDropsRef = useRef<HTMLImageElement>(null)
     const destroyStageImage = useRef<string>("")
     const toolRef = useRef<HTMLImageElement>(null)
+    const [equippedTool, setEquippedTool] = useState<Tool>(InventoryController.getEquippedTool(inventory))
 
     const [destroyStage, setDestroyStage] = useState(0)
 
@@ -29,7 +32,8 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
 
         if(minedAmount > 0){
             setInventory(i => ({...i, blocks: {...i.blocks, [currentBlock.name]: ((i.blocks[currentBlock.name] ?? 0) + minedAmount)}}))
-            
+            setStats(s => ({...s, mined_blocks: s.mined_blocks + minedAmount}))
+
             const Xrange = 12
             const animDuration = 2000
 
@@ -56,8 +60,7 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
     }
 
     function handleMouseDown(){
-        const tool = InventoryController.getEquippedTool(inventory)
-        const animation = tool.types[0]?.animation
+        const animation = equippedTool.types[0]?.animation
 
         blockRef.current?.animate([
             {
@@ -69,8 +72,7 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
     }
 
     function handleMouseUp(){
-        const tool = InventoryController.getEquippedTool(inventory)
-        const animation = tool.types[0]?.animation
+        const animation = equippedTool.types[0]?.animation
 
         blockRef.current?.animate([
             {
@@ -82,26 +84,19 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
         ], {duration: 100, fill: "forwards"})
 
         if(animation) toolRef.current?.animate(animation[1], animation[2])
-        destory(tool.getSpeedOn(currentBlock))
-    }
-
-    function changeTool(tool?: Tool){
-        if(tool){
-            setInventory((i) => {
-                const tools = i.tools
-                tools.map(t => t == tool ? t.equip(tools) : t)
-                return {...i, tools}
-            })
-        }
-        
-        tool = tool ?? InventoryController.getEquippedTool(inventory)
-        const animation = tool.types[0]?.animation
-        if(animation) toolRef.current?.animate(animation[1], {duration:0, fill: "forwards"})
+        destory(equippedTool.getSpeedOn(currentBlock))
     }
 
     useEffect(() => {
-        changeTool()
+        equipTool(InventoryController.getEquippedTool(inventory))
     }, [inventory.tools])
+
+    function equipTool(tool: Tool){
+        tool.equip()
+        setEquippedTool(tool)
+        const animation = tool.types[0]?.animation
+        if(animation) toolRef.current?.animate(animation[1], {duration:0, fill: "forwards"})
+    }
 
     function handleDrop(e: React.DragEvent){
         const data = e.dataTransfer.getData("text")
@@ -111,12 +106,12 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
             case "block":
                 if(value != currentBlock.name){
                     setDestroyStage(0)
-                    setCurrentBlock(curr => Blocs.find(b => b.name == value) ?? curr)
+                    setCurrentBlock(curr => Block.find(value as BlockName) ?? curr)
                 }
                 break;
 
             case "tool":
-                changeTool(Tools[value as keyof typeof Tools])
+                equipTool(Tools[value as keyof typeof Tools])
                 break
 
             default:
@@ -145,7 +140,7 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
                     src={currentBlock.getTexture()} 
                     alt={currentBlock.name}
                 />
-                <img src={InventoryController.getEquippedTool(inventory).getTexture()} ref={toolRef} id='block-tool'/>
+                <img src={equippedTool.getTexture()} ref={toolRef} id='block-tool'/>
             </div>
         </div>
         </>
