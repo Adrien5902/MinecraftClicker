@@ -5,6 +5,8 @@ import { Inventory, InventoryController } from '../../types/Inventory'
 import { Tool, Tools } from '../../types/Tool'
 import { Stats } from '../../types/Stats'
 import Automations from './Automations'
+import { Biome, BiomeName, Biomes } from '../../types/Biome'
+import BiomeElement from './Biome'
 
 interface Props{
     setInventory: React.Dispatch<React.SetStateAction<Inventory>>
@@ -123,6 +125,7 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
     return (
         <>
         <div id='block-container' ref={blockDropsRef}>
+            <Automations/>
             <div id='block' ref={blockRef} onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
                 {
                     (destroyStage/currentBlock.hardness*10-1 >= 0) ?
@@ -143,7 +146,12 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
                 />
                 <img src={equippedTool.getTexture()} ref={toolRef} id='block-tool'/>
             </div>
-            <Automations/>
+            <div id='biomes'>
+                {Object.keys(Biomes).map((n, i) => {
+                    const biome = Biomes[n as BiomeName]
+                    return <BiomeElement key={i} biome={biome}></BiomeElement>
+                })}
+            </div>
         </div>
         </>
     )

@@ -1,4 +1,4 @@
-export function nFormatter(num: number, digits = 1) {
+export function nFormatter(num: number, digits = 2) {
     const lookup = [
         { value: 1, symbol: "" },
         { value: 1e3, symbol: "k" },

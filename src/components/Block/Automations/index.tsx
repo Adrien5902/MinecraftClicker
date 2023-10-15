@@ -3,7 +3,7 @@ interface Props{
 }
 
 export default function Automations({}: Props) {
-    return (<>
+    return (<div id="automations">
         
-    </>);
+    </div>);
 }

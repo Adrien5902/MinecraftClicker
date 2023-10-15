@@ -15,13 +15,15 @@ const save = saveItem ? JSON.parse(saveItem) as Save : startingSave
 
 export const StatsContext = createContext<Stats>(startingStats)
 
+window.addEventListener("beforeunload", function (e) {
+    e.returnValue = ""
+});
+
 function App() {
     const [inventory, setInventory] = useState<Inventory>(InventoryController.resolve(save.inventory))
     const [currentBlock, setCurrentBlock] = useState<Block>(Block.find(save.currentBlock as BlockName))
     const [stats, setStats] = useState<Stats>(save.stats)
     const [biome, _setBiome] = useState<Biome>(Biomes[save.currentBiome as BiomeName])
-    
-    console.log("app renders")
 
     async function Save(){
         return window.localStorage.setItem("save", JSON.stringify({

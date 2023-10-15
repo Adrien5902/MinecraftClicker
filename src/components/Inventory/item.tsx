@@ -1,5 +1,5 @@
 import { Item } from '../../types/Item';
-import { formatItemName } from '../../types/functions';
+import { formatItemName, nFormatter } from '../../types/functions';
 import './style.css'
 
 interface Props{
@@ -19,7 +19,7 @@ export default function InventoryItem({item, count, type}: Props) {
         <div className="inventory-item">
             <img src={item.getTexture()} onDragStart={handleDrag}/>
             <span className="inventory-item-name">{formatItemName(item.name)}</span>
-            {count !== false ? <span className="inventory-item-count">{count}</span> : ""}
+            {count !== false ? <span className="inventory-item-count">{nFormatter(count)}</span> : ""}
         </div>
     );
 }

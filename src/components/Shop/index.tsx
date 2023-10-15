@@ -11,9 +11,7 @@ interface Props{
     setInventory: React.Dispatch<React.SetStateAction<Inventory>>
 }
 
-export default function Shop({close, setInventory, inventory}: Props) {
-    console.log("shop renders")
-    
+export default function Shop({close, setInventory, inventory}: Props) {    
     function handleBuy(price: number, item: Item){
         if(!(inventory.coins >= price)){
             return

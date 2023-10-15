@@ -58,8 +58,6 @@ export default function Header({Save, inventory, setInventory}: Props) {
             setSaving(null)
         }, 1000)
     }
-    
-    console.log("header renders")
 
     return (<div id='header'>
         {(Object.keys(Windows) as WindowNames[]).map((n, i) => [
