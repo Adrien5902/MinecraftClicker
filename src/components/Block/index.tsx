@@ -4,6 +4,7 @@ import { Block, BlockName } from '../../types/Block'
 import { Inventory, InventoryController } from '../../types/Inventory'
 import { Tool, Tools } from '../../types/Tool'
 import { Stats } from '../../types/Stats'
+import Automations from './Automations'
 
 interface Props{
     setInventory: React.Dispatch<React.SetStateAction<Inventory>>
@@ -142,6 +143,7 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
                 />
                 <img src={equippedTool.getTexture()} ref={toolRef} id='block-tool'/>
             </div>
+            <Automations/>
         </div>
         </>
     )

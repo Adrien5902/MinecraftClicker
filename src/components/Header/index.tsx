@@ -4,15 +4,18 @@ import Achievements from '../Achievements';
 import Shop from '../Shop';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faRotate } from '@fortawesome/free-solid-svg-icons';
+import { Inventory } from '../../types/Inventory';
 
 interface Props{
     Save: () => Promise<void>
+    inventory: Inventory
+    setInventory: React.Dispatch<React.SetStateAction<Inventory>>
 }
 
-export default function Header({Save}: Props) {
+export default function Header({Save, inventory, setInventory}: Props) {
     const Windows = {
         achievements: <Achievements close={close}/>,
-        shop: <Shop close={close}/>
+        shop: <Shop close={close} inventory={inventory} setInventory={setInventory}/>
     }
 
     type WindowNames = keyof typeof Windows
@@ -55,6 +58,8 @@ export default function Header({Save}: Props) {
             setSaving(null)
         }, 1000)
     }
+    
+    console.log("header renders")
 
     return (<div id='header'>
         {(Object.keys(Windows) as WindowNames[]).map((n, i) => [

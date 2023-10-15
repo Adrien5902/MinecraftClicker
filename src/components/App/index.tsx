@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useState } from 'react'
 import './style.css'
 import { Block, BlockName } from '../../types/Block'
 import { Inventory, InventoryController } from '../../types/Inventory'
@@ -19,7 +19,9 @@ function App() {
     const [inventory, setInventory] = useState<Inventory>(InventoryController.resolve(save.inventory))
     const [currentBlock, setCurrentBlock] = useState<Block>(Block.find(save.currentBlock as BlockName))
     const [stats, setStats] = useState<Stats>(save.stats)
-    const [biome, setBiome] = useState<Biome>(Biomes[save.currentBiome as BiomeName])
+    const [biome, _setBiome] = useState<Biome>(Biomes[save.currentBiome as BiomeName])
+    
+    console.log("app renders")
 
     async function Save(){
         return window.localStorage.setItem("save", JSON.stringify({
@@ -33,7 +35,7 @@ function App() {
     return (
         <>
             <StatsContext.Provider value={stats}>
-                <Header Save={Save}></Header>
+                <Header Save={Save} inventory={inventory} setInventory={setInventory}></Header>
                 <BlockElement 
                     setCurrentBlock={setCurrentBlock} 
                     currentBlock={currentBlock} 
@@ -43,7 +45,7 @@ function App() {
                 ></BlockElement>
                 <InventoryElement inventory={inventory}/>
             </StatsContext.Provider>
-            <RightClickMenu/>
+            <RightClickMenu buttons={[]}/>
         </>
     )
 }
