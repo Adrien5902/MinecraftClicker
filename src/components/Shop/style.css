@@ -20,6 +20,7 @@
     border-radius: 0;
     border: groove var(--primary) .2em;
     outline: 0 !important;
+    color: white;
 
     &:active{
         border: groove .2em var(--thirdary);
