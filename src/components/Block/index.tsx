@@ -14,9 +14,19 @@ interface Props{
     currentBlock: Block
     inventory: Inventory
     setStats: React.Dispatch<React.SetStateAction<Stats>>
+    biome: Biome
+    setBiome: React.Dispatch<React.SetStateAction<Biome>>
 }
 
-export default function BlockElement({currentBlock, setInventory, inventory, setCurrentBlock, setStats}: Props) {
+export default function BlockElement({
+    currentBlock, 
+    setInventory, 
+    inventory, 
+    setCurrentBlock, 
+    setStats,
+    biome,
+    setBiome,
+}: Props) {
     const blockRef = useRef<HTMLImageElement>(null)
     const blockDropsRef = useRef<HTMLImageElement>(null)
     const destroyStageImage = useRef<string>("")
@@ -34,29 +44,39 @@ export default function BlockElement({currentBlock, setInventory, inventory, set
         destroyStageImage.current = "/destroy/"+(hardnessOutOfTen-1 >= 0 ? hardnessOutOfTen-1 : 0)+".png"
 
         if(minedAmount > 0){
-            setInventory(i => ({...i, blocks: {...i.blocks, [currentBlock.name]: ((i.blocks[currentBlock.name] ?? 0) + minedAmount)}}))
             setStats(s => ({...s, mined_blocks: s.mined_blocks + minedAmount}))
 
             const Xrange = 12
             const animDuration = 2000
-
-            const blockDrops = new Array(minedAmount).fill(null).map(() =>{
-                const blockDrop = document.createElement("img")
-                blockDropsRef.current?.appendChild(blockDrop)
-                blockDrop.classList.add("blockdrop")
-                blockDrop.src = currentBlock.getTexture()
+            
+            setInventory(i => {
+                const blocs = i.blocks
     
-                blockDrop.animate([
-                    {transform: `translateX(${Math.random() * Xrange - Xrange/2}em) translateY(5em)`},
-                    {transform: `translateX(${Math.random() * Xrange*2 - Xrange}em) translateY(100vh) rotate(${Math.random() * 720 * (Math.random() >= 0.5 ? -1 : 1)}deg)`}
-                ], {duration: animDuration, fill: "forwards"})
+                for(let i = 0; i < minedAmount; i++){
+                    const block = i == 0 ? currentBlock : biome.getRandomBlock() ?? currentBlock
+                    blocs[block.name] = blocs[block.name] ?? 0
+                    blocs[block.name] = blocs[block.name] as number + 1
 
-                return blockDrop
+                    const blockDrop = document.createElement("img")
+                    blockDropsRef.current?.appendChild(blockDrop)
+                    blockDrop.classList.add("blockdrop")
+                    blockDrop.src = block.getTexture()
+        
+                    blockDrop.animate([
+                        {transform: `translateX(${Math.random() * Xrange - Xrange/2}em) translateY(calc(50vh + ${Math.random() * 5}em))`},
+                        {transform: `translateX(${Math.random() * Xrange*2 - Xrange}em) translateY(100vh) rotate(${Math.random() * 720 * (Math.random() >= 0.5 ? -1 : 1)}deg)`}
+                    ], {duration: animDuration, fill: "forwards"})
+
+                    setTimeout(() => {
+                        blockDrop.remove()
+                    }, animDuration)
+                }
+    
+                return {...i, blocks: blocs}
             })
-
-            setTimeout(() => {
-                blockDrops.forEach(b => b.remove())
-            }, animDuration)
+            
+            const newBlock = biome.getRandomBlock()
+            if(newBlock) setCurrentBlock(newBlock)
         }
 
         setDestroyStage(dLeft)

@@ -19,6 +19,10 @@
     }
 }
 
+#block-main{
+    aspect-ratio: 1;
+}
+
 .destroy-stages{
     position: absolute;
     z-index: 2;

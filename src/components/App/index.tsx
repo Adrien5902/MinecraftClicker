@@ -23,7 +23,7 @@ function App() {
     const [inventory, setInventory] = useState<Inventory>(InventoryController.resolve(save.inventory))
     const [currentBlock, setCurrentBlock] = useState<Block>(Block.find(save.currentBlock as BlockName))
     const [stats, setStats] = useState<Stats>(save.stats)
-    const [biome, _setBiome] = useState<Biome>(Biomes[save.currentBiome as BiomeName])
+    const [biome, setBiome] = useState<Biome>(Biomes[save.currentBiome as BiomeName])
 
     async function Save(){
         return window.localStorage.setItem("save", JSON.stringify({
@@ -44,6 +44,8 @@ function App() {
                     inventory={inventory} 
                     setInventory={setInventory}
                     setStats={setStats}
+                    biome={biome}
+                    setBiome={setBiome}
                 ></BlockElement>
                 <InventoryElement inventory={inventory}/>
             </StatsContext.Provider>
