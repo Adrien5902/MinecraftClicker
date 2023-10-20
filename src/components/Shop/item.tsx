@@ -16,7 +16,9 @@ export default function ShopItem({
     soldOut = true
 }: Props) {
     return (<div className="shop-item">
-        <img src={item.getTexture()} alt={item.name} draggable={false}/>
+        <div className="shop-item-img">
+            <img src={item.getTexture()} alt={item.name} draggable={false}/>
+        </div>
         <span>{formatItemName(item.name)}</span>
         <ShopButton soldOut={soldOut} price={price} onBuy={() => {onBuy(price, item)}}/>
     </div>);

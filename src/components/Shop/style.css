@@ -4,14 +4,20 @@
 
 .shop-item{
     width: 10em;
+    display: flex;
     aspect-ratio: 1;
-    margin: 2em; 
+    margin: 2em;
     background: var(--thirdary);
-    border-radius: .5em;
+    border-radius: 0.5em;
+    flex-direction: column;
+    align-items: stretch;
 
-    & > img{
-        max-height: 100%;
-        max-width: 100%;
+    & .shop-item-img{
+        padding: .2em;
+
+        > img{
+            height: 6em;
+        }
     }
 }
 
@@ -20,6 +26,8 @@
     border-radius: 0;
     border: groove var(--primary) .2em;
     outline: 0 !important;
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
 
     &:active{
         border: groove .2em var(--thirdary);
