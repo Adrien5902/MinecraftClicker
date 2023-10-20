@@ -28,6 +28,7 @@
     outline: 0 !important;
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
+    color: white;
 
     &:active{
         border: groove .2em var(--thirdary);
