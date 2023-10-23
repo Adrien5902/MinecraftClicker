@@ -1,4 +1,4 @@
-import { Block, BlockTag, BlockTags } from "./Block"
+import { Block, BlockName, BlockTag, BlockTags } from "./Block"
 import { Item } from "./Item"
 import { ObjectClassMap } from "./MapObjectClass"
 
@@ -47,7 +47,7 @@ const ToolTypesList = {
     ],
 
     "axe": [  
-        [BlockTags.wood], 
+        [BlockTags.wood, "cactus"] as (BlockTag | BlockName)[], 
         [
             {transform: "rotateZ(-90deg)"}, 
             {transform: "rotateZ(-180deg)"}, 

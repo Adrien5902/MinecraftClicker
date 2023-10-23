@@ -94,8 +94,8 @@ export class Slave extends Automation implements IAutomation{
                     }}
                     className="automation-slave"
                 >
-                    <img src={this.getTexture()} className="automation-slave-villager"/>
-                    <img className="automation-slave-tool" src={tool.getTexture()}/>
+                    <img src={this.getTexture()} className="automation-slave-villager" draggable={false}/>
+                    <img className="automation-slave-tool" src={tool.getTexture()} draggable={false}/>
                 </div>
             )}
         </div>
@@ -109,11 +109,41 @@ export class CreeperSpawner extends Automation implements IAutomation{
         super(CreeperSpawner.id, 1, power ?? 1)
     }
 
-    onUpdate(){
+    getElement(){
+        const destroy = useContext(DestroyContext)
 
+        useEffect(() => {
+            const duration = 500
+
+            if(this.interval) clearInterval(this.interval)
+
+            this.interval = setInterval(() => {
+                for(let i = 0; i < this.count; i++){
+                    const el = document.createElement("img")
+                    el.classList.add("automation-creeper-spawner-creeper")
+                    el.src = "/automations/creeper_spawner/creeper.png"
+                    document.getElementById("automation-creeper-spawner")?.appendChild(el)
+
+                    el.animate([
+                        {transform: `translate(${Math.random() * 20 - 10}em, ${Math.random() * -100}%)`},
+                        {transform: `translate(${Math.random() * 20 - 10}em, calc(45vh + ${Math.random() * -100}%))`},
+                    ], {duration, fill: "forwards"})
+
+                    setTimeout(() => {
+                        el.remove()
+                    }, duration)
+                }
+                
+                setTimeout(() => {
+                    destroy(false, this.power * this.count)
+                }, duration)
+            }, 1000/this.speed)
+        }, [])
+
+        return <div key="creeper_spawner" id="automation-creeper-spawner">
+            <img src={this.getTexture()} draggable={false}/>
+        </div>
     }
-
-    getElement = () => <></>
 }
 
 export const AutomationList = {

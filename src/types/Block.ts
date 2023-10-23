@@ -16,6 +16,10 @@ export const BlockList = {
     "redstone-ore": [250],
     "diamond-ore": [500],
     "emerald-ore": [500],
+    sand: [20],
+    sandstone: [80],
+    cactus: [50],
+    tnt: [100],
     obsidian: [10000],
 }
 
@@ -56,11 +60,13 @@ export class BlockTag {
 }
 
 const OresTag = new BlockTag("ores", ...(Object.keys(BlockList) as BlockName[]).filter(n => n.includes("ore")))
+const DirtTag = new BlockTag("dirt", "dirt", "grass")
 
 export const BlockTagsList = {
-    soil: ["dirt", "grass"],
+    dirt: [DirtTag],
+    soil: [DirtTag, "sand"],
     ores: [OresTag],
-    stones: ["stone", OresTag, "obsidian"],
+    stones: ["stone", "sandstone", OresTag, "obsidian"],
     wood: ["log", "planks"]
 }
 

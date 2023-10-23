@@ -16,7 +16,17 @@
     }
 }
 
-#automation-slave{
-    left: -1.5em;
-    top: -3em;
+/* CREEPER SPAWNER */
+#automation-creeper-spawner{
+    transform: translateY(calc(-40vh));
+
+    & img{
+        position: absolute;
+        height: 5em;
+    }
+}
+
+.automation-creeper-spawner-creeper{
+    position: absolute;
+    z-index: 80;
 }

@@ -17,7 +17,7 @@ interface Props{
     setBiome: React.Dispatch<React.SetStateAction<Biome>>
 }
 
-export const DestroyContext = createContext<Function>(() => {})
+export const DestroyContext = createContext<(useTool: boolean, power?: number) => void>(() => {})
 
 export default function BlockElement({
     currentBlock, 
@@ -35,6 +35,8 @@ export default function BlockElement({
 
     const [destroyStageImage, setDestroyStageImage] = useState("")
     const destroyAmount = useRef(0)
+
+    const biomeRef = useRef<Biome>(biome)
 
     function destory(useTool: boolean, power: number = 1){
         const Xrange = 12
@@ -73,7 +75,7 @@ export default function BlockElement({
                 blockDrop.remove()
             }, animDuration)
 
-            bloc = biome.getRandomBlock() ?? bloc
+            bloc = biomeRef.current.getRandomBlock() ?? bloc
             blocHardnessWithTool = bloc.hardness/(useTool ? equippedTool.getSpeedMultiplierOn(bloc) : 1)
         }
 
@@ -159,6 +161,16 @@ export default function BlockElement({
         }
     }
 
+    function updateBiome(biome: Biome){
+        destroyAmount.current = 0
+        setDestroyStageImage("")
+        const newBlock = biome.getRandomBlock() ?? currentBlock.current
+        currentBlock.current = newBlock
+        setCurrentBlockState(newBlock)
+        biomeRef.current = biome
+        setBiome(biome)
+    }
+
     return (
         <>
         <div id='block-container' ref={blockDropsRef}>
@@ -190,7 +202,7 @@ export default function BlockElement({
                 />
                 <img src={equippedTool.getTexture()} ref={toolRef} id='block-tool'/>
             </div>
-            <BiomeSelect currBiome={biome} setBiome={setBiome}></BiomeSelect>
+            <BiomeSelect currBiome={biome} setBiome={updateBiome}></BiomeSelect>
         </div>
         </>
     )

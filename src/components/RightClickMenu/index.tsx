@@ -4,7 +4,7 @@ interface Props{
     buttons: {name: string, action: () => void, style?: CSSProperties}[]
 }
 
-export function RightClickMenu({}: Props) {
+export function RightClickMenu({buttons}: Props) {
     return (<dialog className="rightclick-menu">
         
     </dialog>);

@@ -4,7 +4,8 @@ import { Item } from './Item';
 
 type BlockRateList = [BlockName | BlockTag, number][]
 const BiomesList = {
-    plains: [[[BlockTags.soil, 10], ["log", 3]]] as [BlockRateList]
+    plains: [[[BlockTags.dirt, 10], ["log", 3]]] as [BlockRateList],
+    desert: [[["sand", 10], ["sandstone", 4], ["cactus", 1]]] as [BlockRateList]
 }
 
 export type BiomeName = keyof typeof BiomesList
