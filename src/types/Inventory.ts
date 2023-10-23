@@ -46,6 +46,6 @@ export const startingInventory :Inventory = {
     tools: [...Object.values(Tools), Tools.hand.equip()],
     blocks: Object.keys(BlockList).reduce((prev, curr) => ({...prev, [curr]: 0}), {}),
     upgrades: [],
-    coins: 10e80,
+    coins: 10e15,
     automations: {}
 }

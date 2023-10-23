@@ -5,7 +5,7 @@
     padding: .5em;
     border-bottom-right-radius: .5em;
 
-    > * {
+    > *:not(dialog) {
         margin: .5em;
         background: var(--secondary);
         padding: .5em;
@@ -16,6 +16,16 @@
         justify-content: center;
         align-items: center;
         user-select: none;
+        transition: all 100ms;
+        
+        &:hover{
+            transform: scale(1.05);
+            box-shadow: 0 0 .5em var(--secondary);
+        }
+
+        &:active{
+            transform: scale(.95);
+        }
 
         & > svg{
             font-size: 3em;
@@ -29,4 +39,5 @@
 
 dialog{
     color: white;
+    background: var(--primary);
 }

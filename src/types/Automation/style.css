@@ -1,0 +1,22 @@
+/* SLAVE */
+.automation-slave{
+    position: absolute;
+
+    & img{
+        font-size: .1em;
+        height: 60em;
+    }
+    
+    & .automation-slave-tool{
+        height: 30em;
+        position: absolute;
+        pointer-events: none;
+        left: -20em;
+        top: 20em;
+    }
+}
+
+#automation-slave{
+    left: -1.5em;
+    top: -3em;
+}

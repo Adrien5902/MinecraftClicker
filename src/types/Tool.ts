@@ -24,8 +24,8 @@ const ToolTypesList = {
     "hand": [
         [],
         [
-            {transform: "rotateZ(-45deg) scale(0.4) translateX(30em) translateY(2em)", "transformOrigin": "center"}, 
-            {transform: "rotateZ(-105deg) scale(0.4) translateX(10em) translateY(12em)", "transformOrigin": "center"}, 
+            {transform: "rotateZ(-45deg) translateX(3em) translateY(.2em)"}, 
+            {transform: "rotateZ(-105deg) translateX(1em) translateY(1.2em)"}, 
         ]
     ],
 
@@ -118,12 +118,12 @@ export class Tool implements Item{
         return this
     }
 
-    getSpeedOn(block: Block): number{
+    getSpeedMultiplierOn(block: Block): number{
         const bestType = this.types.filter(t => t.quickerMineBlocks.find(b => b == block)).sort((a, b) => b.speedMultiplier - a.speedMultiplier)[0]
         if(bestType){
-            return this.speed * bestType.speedMultiplier
+            return bestType.speedMultiplier
         }else{
-            return this.speed
+            return 1
         }
     }
 

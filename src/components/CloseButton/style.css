@@ -4,6 +4,7 @@
     position: absolute;
     top: 0;
     right: 0.3em;
+    cursor: pointer;
 
     > svg{
         background: #fff;

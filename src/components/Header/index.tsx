@@ -5,14 +5,21 @@ import Shop from '../Shop';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faRotate } from '@fortawesome/free-solid-svg-icons';
 import { Inventory } from '../../types/Inventory';
+import { Settings } from '../../types/Settings';
 
 interface Props{
     Save: () => Promise<void>
     inventory: Inventory
     setInventory: React.Dispatch<React.SetStateAction<Inventory>>
+    setSetting: (setting: keyof Settings, value: any) => void
 }
 
-export default function Header({Save, inventory, setInventory}: Props) {
+export default function Header({
+    Save, 
+    inventory, 
+    setInventory,
+    setSetting,
+}: Props) {
     const Windows = {
         achievements: <Achievements close={close}/>,
         shop: <Shop close={close} inventory={inventory} setInventory={setInventory}/>

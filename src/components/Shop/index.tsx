@@ -4,6 +4,9 @@ import ShopItem from "./item";
 import { Automation, Slave } from "../../types/Automation";
 import './style.css'
 import { Item } from "../../types/Item";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { nFormatter } from "../../types/functions";
 
 interface Props{
     close: () => unknown
@@ -21,10 +24,8 @@ export default function Shop({close, setInventory, inventory}: Props) {
         audio.play()
 
         setInventory(i => {
-            console.log("a") //Logging twice after two buys
             const inv = {...i, coins: i.coins - price}
 
-            console.log(inv.coins)
             if(item instanceof Automation){
                 item.addToInv(inv)
             }
@@ -33,9 +34,18 @@ export default function Shop({close, setInventory, inventory}: Props) {
         })
     }
 
+    function openExchange(){
+        
+    }
+
     return (<>
         <CloseButton onClick={close}/>
         <div id="shop">
+            <div id="shop-coin-plus" onClick={openExchange}>
+                <span>{nFormatter(inventory.coins)}</span>
+                <img src="/coin.png" alt="" />
+                <span className="shop-coin-pplus"><FontAwesomeIcon icon={faPlus}/></span>
+            </div>
             <ShopItem 
                 item={new Slave()} 
                 price={50 * 2 ** (inventory.automations.slave?.count ?? 0)} 

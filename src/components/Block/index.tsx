@@ -1,85 +1,100 @@
-import { useEffect, useRef, useState } from 'react'
+import { createContext, useEffect, useRef, useState } from 'react'
 import './style.css'
 import { Block, BlockName } from '../../types/Block'
 import { Inventory, InventoryController } from '../../types/Inventory'
 import { Tool, Tools } from '../../types/Tool'
 import { Stats } from '../../types/Stats'
-import Automations from './Automations'
-import { Biome, BiomeName, Biomes } from '../../types/Biome'
-import BiomeElement from './Biome'
+import { Biome } from '../../types/Biome'
+import BiomeSelect from './Biome/select'
+import AutomationsElement from './Automations'
 
 interface Props{
     setInventory: React.Dispatch<React.SetStateAction<Inventory>>
-    setCurrentBlock: React.Dispatch<React.SetStateAction<Block>>
-    currentBlock: Block
+    currentBlock: React.MutableRefObject<Block>
     inventory: Inventory
     setStats: React.Dispatch<React.SetStateAction<Stats>>
     biome: Biome
     setBiome: React.Dispatch<React.SetStateAction<Biome>>
 }
 
+export const DestroyContext = createContext<Function>(() => {})
+
 export default function BlockElement({
     currentBlock, 
     setInventory, 
     inventory, 
-    setCurrentBlock, 
     setStats,
     biome,
     setBiome,
 }: Props) {
     const blockRef = useRef<HTMLImageElement>(null)
     const blockDropsRef = useRef<HTMLImageElement>(null)
-    const destroyStageImage = useRef<string>("")
     const toolRef = useRef<HTMLImageElement>(null)
     const [equippedTool, setEquippedTool] = useState<Tool>(InventoryController.getEquippedTool(inventory))
+    const [currentBlockState, setCurrentBlockState] = useState<Block>(currentBlock.current)
 
-    const [destroyStage, setDestroyStage] = useState(0)
+    const [destroyStageImage, setDestroyStageImage] = useState("")
+    const destroyAmount = useRef(0)
 
-    function destory(amount: number){
-        const d = destroyStage + amount
-        const minedAmount = Math.floor(d/currentBlock.hardness)
-        const dLeft = d % currentBlock.hardness
+    function destory(useTool: boolean, power: number = 1){
+        const Xrange = 12
+        const animDuration = 2000
 
-        const hardnessOutOfTen = Math.floor(dLeft/currentBlock.hardness*10)
-        destroyStageImage.current = "/destroy/"+(hardnessOutOfTen-1 >= 0 ? hardnessOutOfTen-1 : 0)+".png"
+        const mined_blocks: Partial<Record<BlockName, number>> = {}
+        const invblock = inventory.blocks
 
-        if(minedAmount > 0){
-            setStats(s => ({...s, mined_blocks: s.mined_blocks + minedAmount}))
+        let mined_amount = destroyAmount.current + (useTool ? (power * equippedTool.speed) : power)
+        let bloc = currentBlock.current
+        let blocHardnessWithTool = bloc.hardness/(useTool ? equippedTool.getSpeedMultiplierOn(bloc) : 1)
 
-            const Xrange = 12
-            const animDuration = 2000
-            
-            setInventory(i => {
-                const blocs = i.blocks
+        while(mined_amount >= blocHardnessWithTool){
+            mined_amount -= blocHardnessWithTool
+            mined_blocks[bloc.name] = mined_blocks[bloc.name] ?? 0
+            mined_blocks[bloc.name] = mined_blocks[bloc.name] as number + 1
+
+            invblock[bloc.name] = invblock[bloc.name] ?? 0
+            invblock[bloc.name] = invblock[bloc.name] as number + 1
     
-                for(let i = 0; i < minedAmount; i++){
-                    const block = i == 0 ? currentBlock : biome.getRandomBlock() ?? currentBlock
-                    blocs[block.name] = blocs[block.name] ?? 0
-                    blocs[block.name] = blocs[block.name] as number + 1
+            const blockDrop = document.createElement("img")
+            blockDropsRef.current?.appendChild(blockDrop)
+            blockDrop.classList.add("blockdrop")
+            blockDrop.src = bloc.getTexture()
 
-                    const blockDrop = document.createElement("img")
-                    blockDropsRef.current?.appendChild(blockDrop)
-                    blockDrop.classList.add("blockdrop")
-                    blockDrop.src = block.getTexture()
-        
-                    blockDrop.animate([
-                        {transform: `translateX(${Math.random() * Xrange - Xrange/2}em) translateY(calc(50vh + ${Math.random() * 5}em))`},
-                        {transform: `translateX(${Math.random() * Xrange*2 - Xrange}em) translateY(100vh) rotate(${Math.random() * 720 * (Math.random() >= 0.5 ? -1 : 1)}deg)`}
-                    ], {duration: animDuration, fill: "forwards"})
+            blockDrop.animate([
+                {transform: `translateX(${Math.random() * Xrange - Xrange/2}em) translateY(${Math.random() * 5 + 2}em)`},
+                {transform: `
+                    translateX(${Math.random() * Xrange*2 - Xrange}em) 
+                    translateY(100vh) 
+                    rotate(${Math.random() * 720 * (Math.random() >= 0.5 ? -1 : 1)}deg)
+                `}
+            ], {duration: animDuration, fill: "forwards"})
 
-                    setTimeout(() => {
-                        blockDrop.remove()
-                    }, animDuration)
-                }
-    
-                return {...i, blocks: blocs}
-            })
-            
-            const newBlock = biome.getRandomBlock()
-            if(newBlock) setCurrentBlock(newBlock)
+            setTimeout(() => {
+                blockDrop.remove()
+            }, animDuration)
+
+            bloc = biome.getRandomBlock() ?? bloc
+            blocHardnessWithTool = bloc.hardness/(useTool ? equippedTool.getSpeedMultiplierOn(bloc) : 1)
         }
 
-        setDestroyStage(dLeft)
+        setInventory(i => ({...i, blocks: invblock}))
+
+        const totalBlocksmined = Object.values(mined_blocks).reduce((prev, curr) => prev + curr, 0)
+        
+        if(totalBlocksmined > 0){
+            setStats(s => ({...s, mined_blocks: s.mined_blocks + totalBlocksmined}))
+
+            destroyAmount.current = mined_amount
+
+            setCurrentBlockState(bloc)
+            currentBlock.current = bloc
+        }else{
+            destroyAmount.current = mined_amount
+        }
+
+        const hardnessOutOfTen = Math.floor(destroyAmount.current/currentBlock.current.hardness*10)
+
+        setDestroyStageImage("/destroy/"+(hardnessOutOfTen-1 >= 0 ? hardnessOutOfTen-1 : 0)+".png")
     }
 
     function handleMouseDown(){
@@ -107,7 +122,7 @@ export default function BlockElement({
         ], {duration: 100, fill: "forwards"})
 
         if(animation) toolRef.current?.animate(animation[1], animation[2])
-        destory(equippedTool.getSpeedOn(currentBlock))
+        destory(true)
     }
 
     useEffect(() => {
@@ -127,9 +142,11 @@ export default function BlockElement({
 
         switch (type.toLowerCase()) {
             case "block":
-                if(value != currentBlock.name){
-                    setDestroyStage(0)
-                    setCurrentBlock(curr => Block.find(value as BlockName) ?? curr)
+                if(value != currentBlock.current.name){
+                    destroyAmount.current = 0
+                    setDestroyStageImage("")
+                    currentBlock.current = Block.find(value as BlockName) ?? currentBlock.current
+                    setCurrentBlockState(currentBlock.current)
                 }
                 break;
 
@@ -145,14 +162,21 @@ export default function BlockElement({
     return (
         <>
         <div id='block-container' ref={blockDropsRef}>
-            <Automations/>
+            <DestroyContext.Provider value={destory}>
+            <AutomationsElement 
+                /*@ts-ignore*/
+                automations={Object.values(inventory.automations)} 
+                currentTool={equippedTool}
+            />
+            </DestroyContext.Provider>
+            
             <div id='block' ref={blockRef} onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
                 {
-                    (destroyStage/currentBlock.hardness*10-1 >= 0) ?
+                    (destroyAmount.current/currentBlockState.hardness*10-1 >= 0) ?
                     <>
-                    <img className='destroy-stages' src={destroyStageImage.current}/>
-                    <img className='destroy-stages' src={destroyStageImage.current}/>
-                    <img className='destroy-stages' src={destroyStageImage.current}/>
+                    <img className='destroy-stages' src={destroyStageImage}/>
+                    <img className='destroy-stages' src={destroyStageImage}/>
+                    <img className='destroy-stages' src={destroyStageImage}/>
                     </>
                     : ""
                 }
@@ -161,17 +185,12 @@ export default function BlockElement({
                     draggable={false} 
                     onMouseDown={handleMouseDown} 
                     onMouseUp={handleMouseUp} 
-                    src={currentBlock.getTexture()} 
-                    alt={currentBlock.name}
+                    src={currentBlockState.getTexture()} 
+                    alt={currentBlockState.name}
                 />
                 <img src={equippedTool.getTexture()} ref={toolRef} id='block-tool'/>
             </div>
-            <div id='biomes'>
-                {Object.keys(Biomes).map((n, i) => {
-                    const biome = Biomes[n as BiomeName]
-                    return <BiomeElement key={i} biome={biome}></BiomeElement>
-                })}
-            </div>
+            <BiomeSelect currBiome={biome} setBiome={setBiome}></BiomeSelect>
         </div>
         </>
     )
