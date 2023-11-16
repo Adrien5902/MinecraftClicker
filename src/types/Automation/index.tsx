@@ -38,8 +38,9 @@ export class Automation implements Item, AutomationResolvable{
     }
 
     addToInv(inv: Inventory, count = 1){
-        if(!inv.automations[this.name]?.addCount(count)){
-            inv.automations[this.name] = this.addCount(count)
+        const automation = inv.automations.find(a => a.name == this.name)
+        if(!automation?.addCount(count)){
+            inv.automations.push(this.addCount(count))
         }
         return this
     }
@@ -113,7 +114,7 @@ export class CreeperSpawner extends Automation implements IAutomation{
         const destroy = useContext(DestroyContext)
 
         useEffect(() => {
-            const duration = 500
+            const duration = 800
 
             if(this.interval) clearInterval(this.interval)
 
@@ -126,8 +127,8 @@ export class CreeperSpawner extends Automation implements IAutomation{
 
                     el.animate([
                         {transform: `translate(${Math.random() * 20 - 10}em, ${Math.random() * -100}%)`},
-                        {transform: `translate(${Math.random() * 20 - 10}em, calc(45vh + ${Math.random() * -100}%))`},
-                    ], {duration, fill: "forwards"})
+                        {transform: `translate(${Math.random() * 20 - 10}em, calc(45vh + ${Math.random() * -100}%)) scale(1.1)`, filter: `contrast(2) saturate(0) brightness(5)`},
+                    ], {duration, fill: "forwards", easing: "cubic-bezier(.6, .33, 1, 1.5"})
 
                     setTimeout(() => {
                         el.remove()

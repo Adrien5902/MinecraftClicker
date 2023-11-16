@@ -50,9 +50,8 @@
     padding: .4em;
     border-radius: .5em;
     background: var(--thirdary);
-    width: 5.5vw;
+    width: 6vw;
     aspect-ratio: 1;
-    font-size: 1em;
     position: relative;
     margin: .2em 0;
     user-select: none;
@@ -66,7 +65,7 @@
         position: absolute;
         text-shadow: -4px -4px 6px #000, -4px 4px 6px #000, 4px -4px 6px #000, 4px 4px 6px #000;
         pointer-events: none;
-        max-width: 75%;
+        font-size: .9em;
     }
 
     & img{

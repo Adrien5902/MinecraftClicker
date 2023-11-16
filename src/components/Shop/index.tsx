@@ -48,7 +48,7 @@ export default function Shop({close, setInventory, inventory}: Props) {
             </div>
             <ShopItem 
                 item={new Slave()} 
-                price={50 * 2 ** (inventory.automations.slave?.count ?? 0)} 
+                price={50 * 2 ** (inventory.automations.find(a => a.name == "slave")?.count ?? 0)} 
                 onBuy={handleBuy}
             />
         </div>

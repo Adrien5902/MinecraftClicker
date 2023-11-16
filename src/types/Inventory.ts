@@ -7,7 +7,7 @@ export interface Inventory{
     tools: Tool[]
     blocks: Partial<{[key in BlockName]: number}>
     upgrades: Upgrade[]
-    automations: Partial<Record<AutomationName, Automation>>
+    automations: Automation[]
     coins: number
 }
 
@@ -16,7 +16,7 @@ export interface InventoryResolvable{
     blocks: Partial<{[key in BlockName]: number}>
     upgrades: Upgrade[]
     coins: number
-    automations: Partial<Record<AutomationName, AutomationResolvable>>
+    automations: AutomationResolvable[]
 }
 
 export const InventoryController = {
@@ -24,13 +24,9 @@ export const InventoryController = {
     resolve: (inventory: InventoryResolvable) => {
         return {
             ...inventory,
-            automations: Object.keys(inventory.automations).map((n) => {
-                const name = n as AutomationName
-                const aRes = inventory.automations[name] as Automation
-                
-                return new AutomationList[name](aRes?.power).addCount(aRes.count)
-            })
-            .reduce((prev, curr) => ({...prev, [curr.name]: curr}) , {} as Partial<Record<AutomationName, AutomationResolvable>>),
+            automations: inventory.automations.map((a) => {
+                return new AutomationList[a.name](a?.power).addCount(a.count)
+            }),
             tools: inventory.tools.map(t => t.equipped ? Tools[t.name].equip() : Tools[t.name]),
         } as Inventory
     },
@@ -47,5 +43,5 @@ export const startingInventory :Inventory = {
     blocks: Object.keys(BlockList).reduce((prev, curr) => ({...prev, [curr]: 0}), {}),
     upgrades: [],
     coins: 10e15,
-    automations: {}
+    automations: []
 }

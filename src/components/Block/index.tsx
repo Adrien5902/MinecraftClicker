@@ -177,7 +177,7 @@ export default function BlockElement({
             <DestroyContext.Provider value={destory}>
             <AutomationsElement 
                 /*@ts-ignore*/
-                automations={Object.values(inventory.automations)} 
+                automations={inventory.automations} 
                 currentTool={equippedTool}
             />
             </DestroyContext.Provider>
