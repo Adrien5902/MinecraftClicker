@@ -27,30 +27,7 @@
 }
 
 .shop-button{
-    background: var(--shop-button-color);
-    border-radius: 0;
-    border: groove var(--primary) .2em;
-    outline: 0 !important;
-    border-bottom-left-radius: inherit;
-    border-bottom-right-radius: inherit;
-    color: white;
 
-    &:active{
-        border: groove .2em var(--thirdary);
-    }
-
-    &:hover{
-        filter: brightness(.85);
-    }
-
-    & > img{
-        width: 1em;
-    }
-
-    &[soldout=true]{
-        cursor: not-allowed;
-        opacity: .8;
-    }
 }
 
 #shop-coin-plus{
@@ -69,22 +46,59 @@
     }
     
     .shop-coin-pplus{
-        border-radius: 0;
-        border: groove var(--primary) 0.2em;
-        outline: 0 !important;
         border-top-right-radius: inherit;
         border-bottom-right-radius: inherit;
-        color: white;
-        height: inherit;
-        margin: 0 !important;
-        background: var(--shop-button-color);
-        display: inline-flex;
-        flex-direction: row;
-        padding: .5em;
-        cursor: pointer;
     }
 
     > *:not(.shop-coin-pplus){
         margin: .4em .3em;
     }
+}
+
+#coin_exchange{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 75vw;
+}
+
+.coin-exchange-block{
+    margin: .2em;
+}
+
+.shop-button{
+    border-radius: 0;
+    border: groove var(--primary) 0.2em;
+    outline: 0 !important;
+    color: white;
+    height: inherit;
+    margin: 0 !important;
+    background: var(--shop-button-color);
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: .5em;
+    cursor: pointer;
+
+    &:active{
+        border: groove .2em var(--thirdary);
+    }
+
+    &:hover{
+        filter: brightness(.85);
+    }
+
+    & > img{
+        width: 1em;
+    }
+
+    &[data-soldout=true]{
+        cursor: not-allowed;
+        opacity: .8;
+    }
+
+    &.bottom-left{border-bottom-left-radius: inherit;}
+    &.bottom-right{border-bottom-right-radius: inherit;}
+    &.top-left{border-top-left-radius: inherit;}
+    &.top-right{border-top-right-radius: inherit;}
 }
